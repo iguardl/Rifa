@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NEBULA — En vivo</title><style>
+:root{
+  --bg:#070812;
+  --panel:rgba(16,18,38,.68);
+  --panel2:rgba(25,28,58,.72);
+  --text:#f7f7ff;
+  --muted:#a7abd0;
+  --a:#8b5cf6;
+  --b:#22d3ee;
+  --c:#f472b6;
+  --good:#4ade80;
+  --danger:#fb7185;
+  --line:rgba(255,255,255,.10);
+  --shadow:0 24px 80px rgba(0,0,0,.46);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; color:var(--text); font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(1100px 700px at 15% -10%, rgba(139,92,246,.20), transparent 60%),
+    radial-gradient(900px 620px at 100% 15%, rgba(34,211,238,.14), transparent 60%),
+    radial-gradient(900px 660px at 55% 110%, rgba(244,114,182,.12), transparent 60%),
+    var(--bg);
+  overflow-x:hidden;
+}
+body:before{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
+  background-image:
+   radial-gradient(circle at 20% 30%, rgba(255,255,255,.45) 0 1px, transparent 1.5px),
+   radial-gradient(circle at 75% 60%, rgba(255,255,255,.28) 0 1px, transparent 1.5px),
+   radial-gradient(circle at 45% 80%, rgba(255,255,255,.25) 0 1px, transparent 1.5px);
+  background-size:180px 180px,250px 250px,320px 320px;
+  animation:drift 28s linear infinite;
+}
+@keyframes drift{to{transform:translate3d(40px,28px,0)}}
+.glow{
+  position:fixed; width:420px; height:420px; border-radius:50%; filter:blur(100px); opacity:.20; pointer-events:none;
+  background:linear-gradient(135deg,var(--a),var(--b)); animation:float 12s ease-in-out infinite;
+}
+.g1{left:-160px; top:20%}.g2{right:-180px; bottom:5%; animation-delay:-5s; background:linear-gradient(135deg,var(--c),var(--a))}
+@keyframes float{50%{transform:translateY(-28px) scale(1.08)}}
+.app{max-width:1480px; margin:auto; padding:24px}
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:46px;height:46px;border-radius:15px;
+  background:conic-gradient(from 220deg,var(--a),var(--b),var(--c),var(--a));
+  box-shadow:0 0 38px rgba(139,92,246,.42), inset 0 0 18px rgba(255,255,255,.25);
+  position:relative;
+}
+.logo:after{content:"";position:absolute;inset:6px;border-radius:11px;background:#0b0d1d}
+.logo:before{content:"✦";position:absolute;z-index:2;inset:0;display:grid;place-items:center;font-size:24px}
+h1{font-size:20px;margin:0;letter-spacing:.16em}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{
+  border:1px solid var(--line); color:var(--text); background:rgba(255,255,255,.06);
+  padding:11px 14px; border-radius:13px; font-weight:800; cursor:pointer; transition:.2s;
+  backdrop-filter:blur(16px);
+}
+button:hover,.btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.10)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.card{
+  background:linear-gradient(180deg,rgba(24,27,55,.78),rgba(10,12,28,.72));
+  border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow);
+  backdrop-filter:blur(24px); overflow:hidden;
+}
+.section{padding:14px 0;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:0}
+.labelrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#c7c9e8;font-weight:900}
+.count{font-size:12px;color:var(--muted)}
+.pill{padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line);font-size:11px;font-weight:850;color:#d9dcf5}
+.pill strong{color:white}
+.people-summary{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 9px}
+.stage{min-height:calc(100vh - 120px);display:grid;grid-template-rows:1fr auto;position:relative}
+.scene{position:relative;min-height:620px;display:grid;place-items:center;padding:26px;overflow:hidden}
+.scene:before{
+ content:"";position:absolute;inset:8%;
+ background:radial-gradient(circle,rgba(139,92,246,.11),transparent 62%);
+ filter:blur(20px);pointer-events:none;
+}
+.wheel-wrap{position:relative;width:min(68vh,720px);aspect-ratio:1;display:grid;place-items:center}
+.wheel-glow{position:absolute;inset:8%;border-radius:50%;background:conic-gradient(var(--a),var(--b),var(--c),var(--a));filter:blur(60px);opacity:.22;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(1.04)}}
+#wheel{width:100%;height:100%;filter:drop-shadow(0 30px 50px rgba(0,0,0,.45))}
+.pointer{
+ position:absolute;right:-12px;top:50%;transform:translateY(-50%);
+ width:0;height:0;border-top:19px solid transparent;border-bottom:19px solid transparent;border-left:0;border-right:38px solid #fff;
+ filter:drop-shadow(0 0 12px rgba(255,255,255,.65));z-index:5
+}
+.center{
+ position:absolute;width:126px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;
+ background:radial-gradient(circle at 35% 25%,#262a5f,#0f112b 64%,#090a17);
+ border:5px solid rgba(255,255,255,.14); box-shadow:0 0 0 8px rgba(0,0,0,.16),0 20px 40px #0008, inset 0 0 30px rgba(139,92,246,.25);
+ z-index:4;font-weight:950;letter-spacing:.1em;font-size:12px
+}
+.center b{font-size:28px;display:block;letter-spacing:0}
+.stagebar{display:flex;gap:10px;align-items:center;justify-content:center;padding:18px;border-top:1px solid var(--line);background:rgba(8,10,24,.45)}
+.history{max-height:230px;overflow:auto;padding-right:4px}
+.hist{
+ display:flex;align-items:center;gap:10px;padding:10px;border-radius:13px;margin-bottom:7px;
+ background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06)
+}
+.num{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(139,92,246,.18);color:#d8ceff;font-weight:900;font-size:12px}
+.hist-name{font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.hist-time{font-size:11px;color:var(--muted)}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+.overlay{
+ position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,rgba(94,68,188,.36),rgba(5,6,16,.92) 52%,#04050c);
+ z-index:50;display:none;place-items:center;padding:24px;backdrop-filter:blur(20px)
+}
+.overlay.show{display:grid;animation:fade .35s ease}
+@keyframes fade{from{opacity:0}}
+.winner-box{text-align:center;max-width:960px;position:relative}
+.kicker{font-size:14px;letter-spacing:.36em;font-weight:950;color:#d2d5ff;margin-bottom:14px}
+.winner{
+ font-size:clamp(54px,10vw,140px);font-weight:1000;line-height:.92;letter-spacing:-.055em;margin:0;
+ background:linear-gradient(90deg,#fff,#c8b8ff 35%,#7fe8ff 70%,#fff);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 26px rgba(139,92,246,.32));animation:winnerPop .6s cubic-bezier(.2,1.6,.3,1)
+}
+@keyframes winnerPop{from{transform:scale(.55) rotate(-2deg);opacity:0}to{transform:scale(1)}}
+.winner-sub{margin:18px 0 26px;color:#c1c5e9;font-size:16px}
+.winner-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.shine{
+ position:absolute;inset:-60px;pointer-events:none;
+ background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.12),transparent 12%,transparent 50%,rgba(255,255,255,.08),transparent 62%);
+ animation:spinGlow 6s linear infinite;border-radius:50%;
+}
+@keyframes spinGlow{to{transform:rotate(360deg)}}
+canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
+.toast{
+ position:fixed;right:20px;bottom:20px;z-index:100;padding:12px 16px;border-radius:14px;
+ background:rgba(17,20,43,.94);border:1px solid var(--line);box-shadow:var(--shadow);
+ transform:translateY(30px);opacity:0;transition:.25s;font-weight:800
+}
+.toast.show{transform:translateY(0);opacity:1}
+.rainbow{animation:hue 12s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.status-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.055);font-size:11px;font-weight:900;color:#d9dcf5}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#fbbf24;box-shadow:0 0 12px currentColor}.status-pill.online .status-dot{background:#4ade80}.status-pill.offline .status-dot{background:#fb7185}
+.setup-card{padding:13px;border-radius:16px;border:1px solid rgba(251,113,133,.25);background:rgba(251,113,133,.07);font-size:12px;line-height:1.55;color:#ffd9e0;margin-bottom:12px}
+.hidden{display:none!important}
+.viewer-grid{display:grid;grid-template-columns:350px 1fr;gap:18px;align-items:stretch}
+.viewer-sidebar{padding:18px;min-height:calc(100vh - 120px)}
+.viewer-list{display:grid;gap:8px;max-height:calc(100vh - 420px);overflow:auto;padding-right:4px}
+.viewer-person{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid rgba(255,255,255,.075);background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(34,211,238,.035));border-radius:15px}
+.viewer-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer-meta{font-size:10px;color:var(--muted);margin-top:3px}
+.viewer-ticket{font-size:12px;font-weight:950;padding:7px 9px;border-radius:11px;background:rgba(3,5,15,.48);border:1px solid rgba(255,255,255,.07)}
+.live-note{padding:10px 12px;border-radius:14px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);color:#c8fbd8;font-size:11px;line-height:1.45;margin-bottom:14px}
+@media(max-width:980px){.viewer-grid{grid-template-columns:1fr}.viewer-sidebar{min-height:auto}.viewer-list{max-height:300px}.scene{min-height:520px}.wheel-wrap{width:min(86vw,580px)}}
+@media(max-width:560px){.app{padding:12px}.topbar{align-items:flex-start}.brand .sub{display:none}.top-actions button{padding:9px 10px}.viewer-sidebar{padding:14px}.scene{min-height:440px;padding:12px}.pointer{right:-4px}.center{width:94px}.winner{font-size:16vw}}
+</style></head>
+<body><div class="glow g1"></div><div class="glow g2"></div><canvas id="fx"></canvas>
+<div class="app">
+  <div class="topbar"><div class="brand"><div class="logo"></div><div><h1>NEBULA</h1><div class="sub">Sorteo en vivo</div></div></div>
+    <div class="top-actions"><span id="syncPill" class="status-pill"><span class="status-dot"></span><span id="syncText">Conectando…</span></span><button id="soundBtn">🔊 Sonido</button><button id="screenBtn">⛶ Pantalla</button></div></div>
+  <div id="setupWarning" class="setup-card hidden">⚠️ Esta página todavía no está conectada. Pídele al administrador que revise nebula-config.js.</div>
+  <div class="viewer-grid">
+    <aside class="card viewer-sidebar">
+      <div class="live-note">👀 Estás viendo el sorteo en vivo. Esta página es solo de lectura, no puedes editar nada desde aquí.</div>
+      <div class="section" style="border-top:0;padding-top:0">
+        <div class="labelrow"><div class="label">Participantes</div><div class="count" id="count">0 personas</div></div>
+        <div class="people-summary"><div class="pill"><strong id="peopleCount">0</strong> personas</div><div class="pill"><strong id="ticketCount">0</strong> boletos</div></div>
+        <div class="viewer-list" id="viewerList"></div>
+      </div>
+      <div class="section"><div class="label">Historial</div><div class="history" id="history" style="margin-top:10px"><div class="empty">Todavía no hay ganadores.</div></div></div>
+    </aside>
+    <main class="card stage">
+      <section class="scene"><div class="wheel-wrap"><div class="wheel-glow"></div><canvas id="wheel" width="900" height="900"></canvas><div class="pointer"></div><div class="center"><div><b>✦</b>SORTEO</div></div></div></section>
+      <div class="stagebar"><span class="status-pill" id="drawStatus"><span class="status-dot"></span><span id="drawStatusText">Esperando el próximo sorteo…</span></span></div>
+    </main>
+  </div>
+</div>
+<div class="overlay" id="overlay"><div class="winner-box"><div class="shine"></div><div class="kicker">★ GANADOR ★</div><h2 class="winner" id="winnerText">—</h2><div class="winner-sub" id="winnerSub"></div><div class="winner-actions"><button id="closeWinner">Continuar</button></div></div></div><div class="toast" id="toast">Listo</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="nebula-config.js"></script>
+<script>
+(() => {
+const $=s=>document.querySelector(s);
+const cfg=window.NEBULA_CONFIG||{}, configured=/^https:\/\//.test(cfg.SUPABASE_URL||'') && !String(cfg.SUPABASE_URL).includes('PEGA_AQUI') && cfg.SUPABASE_ANON_KEY && !String(cfg.SUPABASE_ANON_KEY).includes('PEGA_AQUI');
+let sb=null, channel=null, spinning=false, rotation=0, sound=true, audioCtx=null, particles=[];
+let state={participants:[],history:[],settings:{removeWinner:true,epic:true,rainbow:false},draw:null,version:1};
+const palette=['#8b5cf6','#22d3ee','#f472b6','#6366f1','#14b8a6','#ec4899','#3b82f6','#a855f7','#06b6d4','#d946ef'];
+const wheel=$('#wheel'),ctx=wheel.getContext('2d'),fx=$('#fx'),fctx=fx.getContext('2d');
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const totalTickets=(arr=state.participants)=>arr.reduce((a,p)=>a+p.tickets,0);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2200)}
+function setStatus(kind,text){$('#syncPill').className='status-pill '+kind;$('#syncText').textContent=text}
+function beep(freq=440,d=.08,type='sine',vol=.05){if(!sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d)}catch{}}
+function fanfare(){[523,659,784,1046].forEach((n,i)=>setTimeout(()=>beep(n,.28,'triangle',.08),i*90))}
+async function pullState(){const {data,error}=await sb.from('nebula_state').select('data').eq('id',cfg.RAFFLE_ID||'main').single();if(error)throw error;if(data?.data)state=normalize(data.data);renderAll()}
+function normalize(d){return {participants:Array.isArray(d?.participants)?d.participants:[],history:Array.isArray(d?.history)?d.history:[],settings:{removeWinner:d?.settings?.removeWinner??true,epic:d?.settings?.epic??true,rainbow:d?.settings?.rainbow??false},draw:d?.draw||null,version:1}}
+function renderAll(){document.body.classList.toggle('rainbow',state.settings.rainbow);renderViewerList();renderHistory();renderDrawStatus();if(!spinning)drawWheel(state.participants,rotation)}
+function renderViewerList(){const arr=state.participants,total=totalTickets(arr);$('#count').textContent=`${arr.length} ${arr.length===1?'persona':'personas'} · ${total} ${total===1?'boleto':'boletos'}`;$('#peopleCount').textContent=arr.length;$('#ticketCount').textContent=total;if(!arr.length){$('#viewerList').innerHTML='<div class="empty">Todavía no hay participantes.</div>';return}$('#viewerList').innerHTML=arr.map(p=>{const ch=total?p.tickets/total*100:0;return `<div class="viewer-person"><div><div class="viewer-name">${escapeHTML(p.name)}</div><div class="viewer-meta">${ch.toFixed(ch<10?1:0)}% de probabilidad</div></div><div class="viewer-ticket">🎟️ ${p.tickets}</div></div>`}).join('')}
+function renderHistory(){const h=$('#history');if(!state.history.length){h.innerHTML='<div class="empty">Todavía no hay ganadores.</div>';return}h.innerHTML=state.history.slice(0,30).map((x,i)=>`<div class="hist"><div class="num">${state.history.length-i}</div><div class="hist-name">${escapeHTML(x.name)} <span style="color:#9da3cc;font-size:10px">· 🎟️ ${x.tickets||1}</span></div><div class="hist-time">${escapeHTML(x.time||'')}</div></div>`).join('')}
+function renderDrawStatus(){const el=$('#drawStatus'),txt=$('#drawStatusText');if(state.draw?.status==='spinning'){el.className='status-pill online';txt.textContent='¡Girando la ruleta!'}else{el.className='status-pill';txt.textContent='Esperando el próximo sorteo…'}}
+function truncate(s,m=16){return s.length>m?s.slice(0,m-1)+'…':s}
+function drawWheel(arr,rot=rotation){const W=wheel.width,H=wheel.height,cx=W/2,cy=H/2,R=W*.45;ctx.clearRect(0,0,W,H);if(!arr.length){ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#11142c';ctx.fill();ctx.fillStyle='#777da9';ctx.font='800 28px system-ui';ctx.textAlign='center';ctx.fillText('ESPERANDO PARTICIPANTES',cx,cy);return}const total=totalTickets(arr);let cursor=0;ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);arr.forEach((p,i)=>{const ang=p.tickets/total*Math.PI*2,a0=cursor,a1=cursor+ang;cursor=a1;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a0,a1);ctx.closePath();ctx.fillStyle=palette[i%palette.length];ctx.globalAlpha=.94;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.20)';ctx.lineWidth=2;ctx.stroke();if(ang>.09){ctx.save();ctx.rotate(a0+ang/2);ctx.textAlign='right';ctx.textBaseline='middle';const fs=Math.max(14,Math.min(29,16+ang*12));ctx.font=`900 ${fs}px system-ui`;ctx.fillStyle='white';ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=6;ctx.fillText(p.tickets>1?`${truncate(p.name,15)} ×${p.tickets}`:truncate(p.name,18),R-28,0);ctx.restore()}});ctx.globalAlpha=1;ctx.beginPath();ctx.arc(0,0,R,0,Math.PI*2);ctx.lineWidth=11;ctx.strokeStyle='rgba(255,255,255,.18)';ctx.stroke();ctx.restore()}
+function segmentCenter(arr,idx){const total=totalTickets(arr);let before=0;for(let i=0;i<idx;i++)before+=arr[i].tickets;return (before+arr[idx].tickets/2)/total*Math.PI*2}
+function animateDraw(draw){if(!draw?.snapshot?.length)return;spinning=true;const arr=draw.snapshot,idx=arr.findIndex(p=>p.id===draw.winnerId);if(idx<0)return;const target=(-segmentCenter(arr,idx)+Math.PI*2)%(Math.PI*2),end=draw.turns*Math.PI*2+target;let lastTick=-1;function frame(){const p=Math.max(0,Math.min(1,(Date.now()-draw.startedAt)/draw.duration)),ease=1-Math.pow(1-p,4);rotation=end*ease;drawWheel(arr,rotation);const tick=Math.floor(rotation*18/(Math.PI*2));if(tick!==lastTick&&p>0&&p<.96){beep(160+Math.min(700,p*700),.025,'square',.025);lastTick=tick}if(p<1)requestAnimationFrame(frame);else{rotation=end;drawWheel(arr,rotation);showWinner(draw);spinning=false}}frame()}
+function showWinner(d){const total=totalTickets(d.snapshot||[]),chance=total?d.winnerTickets/total*100:0;$('#winnerText').textContent=d.winnerName;$('#winnerSub').innerHTML=`Tenía <b>${d.winnerTickets}</b> boleto${d.winnerTickets===1?'':'s'} de <b>${total}</b> · ${chance.toFixed(chance<10?1:0)}% de probabilidad.`;$('#overlay').classList.add('show');confetti();fanfare()}
+function confetti(){resizeFX();const colors=['#ffffff','#8b5cf6','#22d3ee','#f472b6','#facc15','#4ade80'];particles=[];for(let i=0;i<220;i++)particles.push({x:fx.width/2+(Math.random()-.5)*180,y:fx.height*.38,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,g:.22+Math.random()*.15,rot:Math.random()*6,vr:(Math.random()-.5)*.3,s:5+Math.random()*8,color:colors[Math.floor(Math.random()*colors.length)],life:1});animateFX()}
+function resizeFX(){fx.width=innerWidth*devicePixelRatio;fx.height=innerHeight*devicePixelRatio;fx.style.width=innerWidth+'px';fx.style.height=innerHeight+'px'}
+function animateFX(){fctx.clearRect(0,0,fx.width,fx.height);particles.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.004;fctx.save();fctx.translate(p.x,p.y);fctx.rotate(p.rot);fctx.globalAlpha=Math.max(0,p.life);fctx.fillStyle=p.color;fctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.66);fctx.restore()});particles=particles.filter(p=>p.y<fx.height+60&&p.life>0);if(particles.length)requestAnimationFrame(animateFX);else fctx.clearRect(0,0,fx.width,fx.height)}
+function handleRemote(d){const incoming=normalize(d);const newToken=incoming.draw?.token;const oldToken=state.draw?.token;state=incoming;renderAll();if(newToken&&newToken!==oldToken&&incoming.draw.status==='spinning')animateDraw(incoming.draw)}
+async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);await pullState();setStatus('online','En vivo');channel=sb.channel('nebula-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();if(state.draw?.status==='spinning')animateDraw(state.draw)}
+$('#closeWinner').onclick=()=>$('#overlay').classList.remove('show');
+$('#soundBtn').onclick=()=>{sound=!sound;$('#soundBtn').textContent=sound?'🔊 Sonido':'🔇 Silencio';beep(520,.1,'sine',.08)};
+$('#screenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+window.addEventListener('resize',resizeFX);init();
+})();
+</script></body></html>
