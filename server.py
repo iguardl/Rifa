@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Servidor estático local para NEBULA.
+"""Servidor estático local para RIFA.
 
 Por defecto solo escucha en 127.0.0.1: nadie fuera de esta PC puede
 siquiera abrir la página. La protección de las acciones de admin
@@ -9,7 +9,7 @@ no este servidor -- ver README.md.
 Uso:
     python server.py                # solo esta PC, puerto 8787
     python server.py --lan          # visible en tu red local (para que
-                                     # la gente vea nebula-publico.html
+                                     # la gente vea rifa.html
                                      # desde su celular en el evento)
     python server.py --port 9000
 """
@@ -31,11 +31,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
     def log_message(self, fmt, *args):
-        print(f"[nebula] {self.address_string()} - {fmt % args}")
+        print(f"[rifa] {self.address_string()} - {fmt % args}")
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Servidor local para NEBULA")
+    ap = argparse.ArgumentParser(description="Servidor local para RIFA")
     ap.add_argument("--port", type=int, default=8787)
     ap.add_argument("--lan", action="store_true",
                      help="Exponer en la red local (0.0.0.0) en vez de solo esta PC")
@@ -47,12 +47,12 @@ def main():
     socketserver.TCPServer.allow_reuse_address = True
 
     with socketserver.TCPServer((host, args.port), Handler) as httpd:
-        admin_url = f"http://localhost:{args.port}/nebula-admin.html"
-        print(f"NEBULA admin: {admin_url}")
+        admin_url = f"http://localhost:{args.port}/admin.html"
+        print(f"RIFA admin: {admin_url}")
         if args.lan:
             print("Modo LAN: cualquiera en tu WiFi puede ABRIR la página (incluida la de admin).")
             print("Eso está bien porque sin iniciar sesión en Supabase nadie puede tocar nada,")
-            print("pero comparte solo el link de nebula-publico.html con tus invitados.")
+            print("pero comparte solo el link de rifa.html con tus invitados.")
         else:
             print("Solo esta PC puede abrir el servidor (127.0.0.1). Para compartir la vista")
             print("pública en el evento, corre: python server.py --lan")
@@ -61,7 +61,7 @@ def main():
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\nNEBULA detenido.")
+            print("\nRIFA detenido.")
 
 
 if __name__ == "__main__":

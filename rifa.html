@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NEBULA — En vivo</title><style>
+<title>RIFA — En vivo</title><style>
 :root{
   --bg:#070812;
   --panel:rgba(16,18,38,.68);
@@ -158,7 +158,7 @@ canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
 </style></head>
 <body><div class="glow g1"></div><div class="glow g2"></div><canvas id="fx"></canvas>
 <div class="app">
-  <div class="topbar"><div class="brand"><div class="logo"></div><div><h1>NEBULA</h1><div class="sub">Sorteo en vivo</div></div></div>
+  <div class="topbar"><div class="brand"><div class="logo"></div><div><h1>RIFA</h1><div class="sub">Sorteo en vivo</div></div></div>
     <div class="top-actions"><span id="syncPill" class="status-pill"><span class="status-dot"></span><span id="syncText">Conectando…</span></span><button id="soundBtn">🔊 Sonido</button><button id="screenBtn">⛶ Pantalla</button></div></div>
   <div id="setupWarning" class="setup-card hidden">⚠️ Esta página todavía no está conectada. Pídele al administrador que revise nebula-config.js.</div>
   <div class="viewer-grid">
@@ -178,11 +178,11 @@ canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
   </div>
 </div>
 <div class="overlay" id="overlay"><div class="winner-box"><div class="shine"></div><div class="kicker">★ GANADOR ★</div><h2 class="winner" id="winnerText">—</h2><div class="winner-sub" id="winnerSub"></div><div class="winner-actions"><button id="closeWinner">Continuar</button></div></div></div><div class="toast" id="toast">Listo</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="nebula-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
 <script>
 (() => {
 const $=s=>document.querySelector(s);
-const cfg=window.NEBULA_CONFIG||{}, configured=/^https:\/\//.test(cfg.SUPABASE_URL||'') && !String(cfg.SUPABASE_URL).includes('PEGA_AQUI') && cfg.SUPABASE_ANON_KEY && !String(cfg.SUPABASE_ANON_KEY).includes('PEGA_AQUI');
+const cfg=window.RIFA_CONFIG||{}, configured=/^https:\/\//.test(cfg.SUPABASE_URL||'') && !String(cfg.SUPABASE_URL).includes('PEGA_AQUI') && cfg.SUPABASE_ANON_KEY && !String(cfg.SUPABASE_ANON_KEY).includes('PEGA_AQUI');
 let sb=null, channel=null, spinning=false, rotation=0, sound=true, audioCtx=null, particles=[];
 let state={participants:[],history:[],settings:{removeWinner:true,epic:true,rainbow:false},draw:null,version:1};
 const palette=['#8b5cf6','#22d3ee','#f472b6','#6366f1','#14b8a6','#ec4899','#3b82f6','#a855f7','#06b6d4','#d946ef'];
@@ -208,7 +208,7 @@ function confetti(){resizeFX();const colors=['#ffffff','#8b5cf6','#22d3ee','#f47
 function resizeFX(){fx.width=innerWidth*devicePixelRatio;fx.height=innerHeight*devicePixelRatio;fx.style.width=innerWidth+'px';fx.style.height=innerHeight+'px'}
 function animateFX(){fctx.clearRect(0,0,fx.width,fx.height);particles.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.004;fctx.save();fctx.translate(p.x,p.y);fctx.rotate(p.rot);fctx.globalAlpha=Math.max(0,p.life);fctx.fillStyle=p.color;fctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.66);fctx.restore()});particles=particles.filter(p=>p.y<fx.height+60&&p.life>0);if(particles.length)requestAnimationFrame(animateFX);else fctx.clearRect(0,0,fx.width,fx.height)}
 function handleRemote(d){const incoming=normalize(d);const newToken=incoming.draw?.token;const oldToken=state.draw?.token;state=incoming;renderAll();if(newToken&&newToken!==oldToken&&incoming.draw.status==='spinning')animateDraw(incoming.draw)}
-async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);await pullState();setStatus('online','En vivo');channel=sb.channel('nebula-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();if(state.draw?.status==='spinning')animateDraw(state.draw)}
+async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);await pullState();setStatus('online','En vivo');channel=sb.channel('rifa-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();if(state.draw?.status==='spinning')animateDraw(state.draw)}
 $('#closeWinner').onclick=()=>$('#overlay').classList.remove('show');
 $('#soundBtn').onclick=()=>{sound=!sound;$('#soundBtn').textContent=sound?'🔊 Sonido':'🔇 Silencio';beep(520,.1,'sine',.08)};
 $('#screenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();

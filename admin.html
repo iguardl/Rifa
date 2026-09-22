@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NEBULA — Admin</title><style>
+<title>RIFA — Admin</title><style>
 :root{
   --bg:#070812;
   --panel:rgba(16,18,38,.68);
@@ -250,9 +250,9 @@ kbd{background:#181b38;border:1px solid rgba(255,255,255,.12);border-bottom-widt
 </style></head>
 <body><div class="glow g1"></div><div class="glow g2"></div><canvas id="fx"></canvas>
 <div class="app">
-  <div class="topbar"><div class="brand"><div class="logo"></div><div><h1>NEBULA</h1><div class="sub">Panel de administrador</div></div></div>
+  <div class="topbar"><div class="brand"><div class="logo"></div><div><h1>RIFA</h1><div class="sub">Panel de administrador</div></div></div>
     <div class="top-actions"><span id="syncPill" class="status-pill"><span class="status-dot"></span><span id="syncText">Conectando…</span></span><button id="publicLinkBtn">🔗 Link público</button><button id="soundBtn">🔊 Sonido</button><button id="screenBtn">⛶ Pantalla</button></div></div>
-  <div id="setupWarning" class="setup-card hidden">⚠️ Falta conectar Supabase. Abre <b>nebula-config.js</b> y pega tu Project URL y tu anon key. El README trae los pasos.</div>
+  <div id="setupWarning" class="setup-card hidden">⚠️ Falta conectar Supabase. Abre <b>config.js</b> y pega tu Project URL y tu anon key. El README trae los pasos.</div>
   <div class="grid">
     <aside class="card sidebar">
       <div class="section" id="authSection"><div class="labelrow"><div class="label">Administrador</div><div class="count" id="authState">Sin sesión</div></div>
@@ -271,11 +271,11 @@ kbd{background:#181b38;border:1px solid rgba(255,255,255,.12);border-bottom-widt
   </div>
 </div>
 <div class="overlay" id="overlay"><div class="winner-box"><div class="shine"></div><div class="kicker">★ GANADOR ★</div><h2 class="winner" id="winnerText">—</h2><div class="winner-sub" id="winnerSub"></div><div class="winner-actions"><button class="primary" id="closeWinner">Continuar</button><button id="copyWinner">Copiar nombre</button></div></div></div><div class="toast" id="toast">Listo</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="nebula-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
 <script>
 (() => {
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const cfg=window.NEBULA_CONFIG||{}, configured=/^https:\/\//.test(cfg.SUPABASE_URL||'') && !String(cfg.SUPABASE_URL).includes('PEGA_AQUI') && cfg.SUPABASE_ANON_KEY && !String(cfg.SUPABASE_ANON_KEY).includes('PEGA_AQUI');
+const cfg=window.RIFA_CONFIG||{}, configured=/^https:\/\//.test(cfg.SUPABASE_URL||'') && !String(cfg.SUPABASE_URL).includes('PEGA_AQUI') && cfg.SUPABASE_ANON_KEY && !String(cfg.SUPABASE_ANON_KEY).includes('PEGA_AQUI');
 let sb=null, channel=null, session=null, spinning=false, rotation=0, sound=true, audioCtx=null, particles=[], lastSnapshot=null;
 let state={participants:[],history:[],settings:{removeWinner:true,epic:true,rainbow:false},draw:null,version:1};
 const palette=['#8b5cf6','#22d3ee','#f472b6','#6366f1','#14b8a6','#ec4899','#3b82f6','#a855f7','#06b6d4','#d946ef'];
@@ -305,7 +305,7 @@ function addPerson(name,tickets=1){if(!session)return toast('Primero inicia sesi
 function confetti(){resizeFX();const colors=['#ffffff','#8b5cf6','#22d3ee','#f472b6','#facc15','#4ade80'];particles=[];for(let i=0;i<220;i++)particles.push({x:fx.width/2+(Math.random()-.5)*180,y:fx.height*.38,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,g:.22+Math.random()*.15,rot:Math.random()*6,vr:(Math.random()-.5)*.3,s:5+Math.random()*8,color:colors[Math.floor(Math.random()*colors.length)],life:1});animateFX()}
 function resizeFX(){fx.width=innerWidth*devicePixelRatio;fx.height=innerHeight*devicePixelRatio;fx.style.width=innerWidth+'px';fx.style.height=innerHeight+'px'}function animateFX(){fctx.clearRect(0,0,fx.width,fx.height);particles.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.004;fctx.save();fctx.translate(p.x,p.y);fctx.rotate(p.rot);fctx.globalAlpha=Math.max(0,p.life);fctx.fillStyle=p.color;fctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.66);fctx.restore()});particles=particles.filter(p=>p.y<fx.height+60&&p.life>0);if(particles.length)requestAnimationFrame(animateFX);else fctx.clearRect(0,0,fx.width,fx.height)}
 function handleRemote(d){const incoming=normalize(d);const newToken=incoming.draw?.token;const oldToken=state.draw?.token;state=incoming;renderAll();if(newToken&&newToken!==oldToken&&incoming.draw.status==='spinning')animateDraw(incoming.draw,false)}
-async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);const {data:{session:s}}=await sb.auth.getSession();session=s;updateAuthUI();await pullState();setStatus('online','En vivo');channel=sb.channel('nebula-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();sb.auth.onAuthStateChange((_e,ses)=>{session=ses;updateAuthUI()});if(state.draw?.status==='spinning')animateDraw(state.draw,false)}
+async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);const {data:{session:s}}=await sb.auth.getSession();session=s;updateAuthUI();await pullState();setStatus('online','En vivo');channel=sb.channel('rifa-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();sb.auth.onAuthStateChange((_e,ses)=>{session=ses;updateAuthUI()});if(state.draw?.status==='spinning')animateDraw(state.draw,false)}
 $('#loginBtn').onclick=async()=>{if(!configured)return toast('Primero configura Supabase.');const email=$('#email').value.trim(),password=$('#password').value;if(!email||!password)return toast('Escribe correo y contraseña.');const {error}=await sb.auth.signInWithPassword({email,password});if(error)toast('No pude entrar: '+error.message);else{toast('Sesión iniciada.');session=(await sb.auth.getSession()).data.session;updateAuthUI()}};$('#logoutBtn').onclick=()=>sb?.auth.signOut();
 $('#addPersonBtn').onclick=()=>addPerson($('#personName').value,$('#personTickets').value);$('#personName').onkeydown=e=>{if(e.key==='Enter')$('#addPersonBtn').click()};$('#personTickets').onkeydown=e=>{if(e.key==='Enter')$('#addPersonBtn').click()};
 $('#peopleList').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b||!session)return;const card=b.closest('.person-card'),p=state.participants.find(x=>x.id===card.dataset.id);if(!p)return;if(b.dataset.act==='plus')p.tickets++;if(b.dataset.act==='minus'){p.tickets--;if(p.tickets<=0)state.participants=state.participants.filter(x=>x.id!==p.id)}if(b.dataset.act==='delete')state.participants=state.participants.filter(x=>x.id!==p.id);renderAll();pushState()};
@@ -316,6 +316,6 @@ $('#drawBtn').onclick=startDraw;$('#closeWinner').onclick=()=>$('#overlay').clas
 $('#undoBtn').onclick=async()=>{if(!session)return toast('Primero inicia sesión.');if(!lastSnapshot)return toast('No hay nada que deshacer.');state=normalize(lastSnapshot);lastSnapshot=null;renderAll();await pushState();toast('Último cambio deshecho.')};
 $('#clearBtn').onclick=async()=>{if(!session)return toast('Primero inicia sesión.');if(confirm('¿Vaciar participantes e historial de esta rifa?')){lastSnapshot=JSON.parse(JSON.stringify(state));state.participants=[];state.history=[];state.draw=null;renderAll();await pushState();toast('Rifa vaciada.')}};
 $('#exportBtn').onclick=()=>{if(!state.history.length)return toast('No hay historial.');const csv='N°,Ganador,Boletos,Fecha\n'+state.history.map((x,i)=>`${state.history.length-i},"${x.name.replaceAll('"','""')}",${x.tickets||1},"${x.time||''}"`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='historial_nebula.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
-$('#publicLinkBtn').onclick=async()=>{const u=new URL(location.href);u.pathname=u.pathname.replace(/nebula-admin\.html$/,'nebula-publico.html');try{await navigator.clipboard.writeText(u.href);toast('Link público copiado.')}catch{toast(u.href)}};$('#soundBtn').onclick=()=>{sound=!sound;$('#soundBtn').textContent=sound?'🔊 Sonido':'🔇 Silencio';beep(520,.1,'sine',.08)};$('#screenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();window.addEventListener('resize',resizeFX);init();
+$('#publicLinkBtn').onclick=async()=>{const u=new URL(location.href);u.pathname=u.pathname.replace(/admin\.html$/,'rifa.html');try{await navigator.clipboard.writeText(u.href);toast('Link público copiado.')}catch{toast(u.href)}};$('#soundBtn').onclick=()=>{sound=!sound;$('#soundBtn').textContent=sound?'🔊 Sonido':'🔇 Silencio';beep(520,.1,'sine',.08)};$('#screenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();window.addEventListener('resize',resizeFX);init();
 })();
 </script></body></html>
