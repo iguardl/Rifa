@@ -149,7 +149,9 @@ canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
 .viewer-sidebar{padding:18px;min-height:calc(100vh - 120px)}
 .viewer-list{display:grid;gap:8px;max-height:calc(100vh - 420px);overflow:auto;padding-right:4px}
 .viewer-person{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid rgba(255,255,255,.075);background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(34,211,238,.035));border-radius:15px}
-.viewer-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;display:inline-block;transform-origin:center}
+.viewer-name.bounce{animation:nameBounce .55s cubic-bezier(.36,.07,.19,.97)}
+@keyframes nameBounce{0%{transform:scale(1)}25%{transform:scale(1.3,.72) translateY(2px)}45%{transform:scale(.82,1.2) translateY(-10px)}65%{transform:scale(1.12,.9) translateY(0)}82%{transform:scale(.96,1.05)}100%{transform:scale(1)}}
 .viewer-meta{font-size:10px;color:var(--muted);margin-top:3px}
 .viewer-ticket{font-size:12px;font-weight:950;padding:7px 9px;border-radius:11px;background:rgba(3,5,15,.48);border:1px solid rgba(255,255,255,.07)}
 .live-note{padding:10px 12px;border-radius:14px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);color:#c8fbd8;font-size:11px;line-height:1.45;margin-bottom:14px}
@@ -210,6 +212,7 @@ function animateFX(){fctx.clearRect(0,0,fx.width,fx.height);particles.forEach(p=
 function handleRemote(d){const incoming=normalize(d);const newToken=incoming.draw?.token;const oldToken=state.draw?.token;state=incoming;renderAll();if(newToken&&newToken!==oldToken&&incoming.draw.status==='spinning')animateDraw(incoming.draw)}
 async function init(){resizeFX();if(!configured){$('#setupWarning').classList.remove('hidden');setStatus('offline','Sin configurar');renderAll();return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);await pullState();setStatus('online','En vivo');channel=sb.channel('rifa-live-'+(cfg.RAFFLE_ID||'main')).on('postgres_changes',{event:'UPDATE',schema:'public',table:'nebula_state',filter:'id=eq.'+(cfg.RAFFLE_ID||'main')},payload=>handleRemote(payload.new.data)).subscribe();if(state.draw?.status==='spinning')animateDraw(state.draw)}
 $('#closeWinner').onclick=()=>$('#overlay').classList.remove('show');
+$('#viewerList').onclick=e=>{const nameEl=e.target.closest('.viewer-name');if(!nameEl)return;nameEl.classList.remove('bounce');void nameEl.offsetWidth;nameEl.classList.add('bounce');beep(680,.05,'sine',.03)};
 $('#soundBtn').onclick=()=>{sound=!sound;$('#soundBtn').textContent=sound?'🔊 Sonido':'🔇 Silencio';beep(520,.1,'sine',.08)};
 $('#screenBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
 window.addEventListener('resize',resizeFX);init();
